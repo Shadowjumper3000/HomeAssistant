@@ -1,25 +1,49 @@
 import speech_recognition as sr
 import queue
 from utils.text_to_speech import output_text
+import whisper
+import tempfile
+import os
+import torch
 
 action_queue = queue.Queue()
 
+print(torch.__version__)
+print(torch.cuda.is_available())
+
 
 def record_audio():
+    if whisper is None:
+        print(
+            "Whisper library is not available. Please install it using 'pip install openai-whisper'."
+        )
+        return
+
+    model = whisper.load_model("base")
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
         recognizer.adjust_for_ambient_noise(
             source, duration=1
         )  # Adjust for ambient noise
+
         while True:
             try:
                 audio = recognizer.listen(source)  # Continuously listen for audio
-                voice_data = recognizer.recognize_google(audio)
+                with tempfile.NamedTemporaryFile(
+                    delete=False, suffix=".wav"
+                ) as temp_audio_file:
+                    temp_audio_file.write(audio.get_wav_data())
+                    temp_audio_file_path = temp_audio_file.name
+
+                # Transcribe audio using Whisper
+                result = model.transcribe(temp_audio_file_path)
+                voice_data = result["text"]
+                os.remove(temp_audio_file_path)  # Clean up temporary file
+
                 if voice_data:
                     print(f"Detected audio: {voice_data}")
                     action_queue.put(voice_data)
-                    return voice_data
             except sr.UnknownValueError:
                 print("Sorry, I did not get that")
             except sr.RequestError:
