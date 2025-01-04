@@ -4,7 +4,7 @@ import datetime
 import asyncio
 import aiohttp
 from utils.audio import record_audio, action_queue
-from utils.text_to_speech import output_text, stop_audio
+from utils.text_to_speech import output_text
 from utils.llm import query_llm
 from utils.web_search import perform_web_search
 
@@ -37,8 +37,6 @@ async def respond():
                 elif "exit" in voice_data:
                     output_text("Goodbye!")
                     stop_event.set()
-                elif "stop" in voice_data:
-                    stop_audio()
                 else:
                     response = await query_llm(session, voice_data)  # Query local LLM
                     output_text(response)

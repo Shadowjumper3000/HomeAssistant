@@ -1,6 +1,6 @@
 import speech_recognition as sr
 import queue
-from utils.text_to_speech import output_text, stop_audio
+from utils.text_to_speech import output_text
 
 action_queue = queue.Queue()
 
@@ -18,7 +18,6 @@ def record_audio():
                 voice_data = recognizer.recognize_google(audio)
                 if voice_data:
                     print(f"Detected audio: {voice_data}")
-                    stop_audio()  # Stop any ongoing audio playback
                     action_queue.put(voice_data)
                     return voice_data
             except sr.UnknownValueError:
