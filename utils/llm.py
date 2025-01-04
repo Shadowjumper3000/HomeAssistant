@@ -14,7 +14,7 @@ LLM_API_URL = "http://localhost:11434/api/generate"  # URL of the local LLM API
 async def query_llm(session, query):
     payload = {
         "model": "llama3",
-        "prompt": query,
+        "prompt": f"This is your context: {context}; This is your query: {query};",
     }
     try:
         print(f"Querying LLM with: {query}")
