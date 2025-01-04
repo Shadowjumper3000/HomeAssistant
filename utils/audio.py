@@ -21,7 +21,7 @@ def record_audio():
                     action_queue.put(voice_data)
                     return voice_data
             except sr.UnknownValueError:
-                output_text("Sorry, I did not get that")
+                print("Sorry, I did not get that")
             except sr.RequestError:
                 output_text("Sorry, my speech service is down")
             except Exception as e:
