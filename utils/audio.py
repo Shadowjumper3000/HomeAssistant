@@ -32,9 +32,14 @@ def record_audio():
             source, duration=1
         )  # Adjust for ambient noise
 
+        # Set the energy threshold lower to increase sensitivity
+        recognizer.energy_threshold = 300  # Adjust this value as needed
+
         while True:
             try:
-                audio = recognizer.listen(source)  # Continuously listen for audio
+                audio = recognizer.listen(
+                    source, phrase_time_limit=30
+                )  # Continuously listen for audio
                 with tempfile.NamedTemporaryFile(
                     delete=False, suffix=".wav"
                 ) as temp_audio_file:
