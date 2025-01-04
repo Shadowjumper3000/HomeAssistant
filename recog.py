@@ -16,10 +16,9 @@ async def respond():
     async with aiohttp.ClientSession() as session:
         while not stop_event.is_set():
             try:
-                voice_data = action_queue.get(timeout=1)
+                voice_data, sentiment = action_queue.get(timeout=1)
                 if debug:
                     voice_data = "Test message"
-                print(f"Detected audio: {voice_data}")
                 if "current time" in voice_data:
                     time = datetime.datetime.now().strftime("%I:%M %p")
                     output_text(time)
@@ -28,7 +27,7 @@ async def respond():
                     output_text(date)
                 elif "search" in voice_data:
                     output_text("What do you want to search for?")
-                    search = record_audio()
+                    search = voice_data
                     output_text("Searching for " + search)
                     search_result = await perform_web_search(
                         session, search
@@ -37,17 +36,20 @@ async def respond():
                 elif "exit" in voice_data:
                     output_text("Goodbye!")
                     stop_event.set()
+                elif "stop" in voice_data:
+                    pass
                 else:
-                    response = await query_llm(session, voice_data)  # Query local LLM
+                    response = await query_llm(session, voice_data, sentiment)  # Query local LLM
                     output_text(response)
                 action_queue.task_done()
             except queue.Empty:
                 continue
+            except Exception as e:
+                print(f"Unexpected error: {e}")
 
 
 def continuously_record_microphone():
-    while not stop_event.is_set():
-        record_audio()
+    record_audio()
 
 
 recording_thread = threading.Thread(target=continuously_record_microphone)

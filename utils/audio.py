@@ -5,6 +5,10 @@ import whisper
 import tempfile
 import os
 import torch
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+nltk.download("vader_lexicon")
 
 action_queue = queue.Queue()
 
@@ -21,6 +25,7 @@ def record_audio():
 
     model = whisper.load_model("base")
     recognizer = sr.Recognizer()
+    sia = SentimentIntensityAnalyzer()
     with sr.Microphone() as source:
         print("Listening...")
         recognizer.adjust_for_ambient_noise(
@@ -43,7 +48,10 @@ def record_audio():
 
                 if voice_data:
                     print(f"Detected audio: {voice_data}")
-                    action_queue.put(voice_data)
+                    # Perform sentiment analysis
+                    sentiment = sia.polarity_scores(voice_data)
+                    print(f"Sentiment analysis: {sentiment}")
+                    action_queue.put((voice_data, sentiment))
             except sr.UnknownValueError:
                 print("Sorry, I did not get that")
             except sr.RequestError:

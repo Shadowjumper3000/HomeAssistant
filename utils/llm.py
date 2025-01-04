@@ -11,10 +11,10 @@ context = os.getenv("LLM_CONTEXT")
 LLM_API_URL = "http://localhost:11434/api/generate"  # URL of the local LLM API
 
 
-async def query_llm(session, query):
+async def query_llm(session, query, sentiment):
     payload = {
         "model": "llama3",
-        "prompt": f"This is your context: {context}; This is your query: {query};",
+        "prompt": f"This is your context: {context}; This is your query: {query}; This is users percieved sentiment: {sentiment}",
     }
     try:
         print(f"Querying LLM with: {query}")
