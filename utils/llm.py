@@ -27,10 +27,12 @@ async def query_llm(session, query):
                     chunk = json.loads(line)
                     if "response" in chunk:
                         output += chunk["response"]
+            print(f"LLM Response: {output}")  # Print the response in the terminal
             log_llm_query(query, output)
             return output
     except aiohttp.ClientError as e:
         error_message = f"Error querying LLM: {e}"
+        print(error_message)  # Print the error message in the terminal
         log_llm_query(query, error_message)
         return error_message
 

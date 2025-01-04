@@ -1,11 +1,10 @@
-# filepath: /C:/Users/User/OneDrive/Documents/Programming/Private/Projects/HomeAssistant/recog.py
 import threading
 import queue
 import datetime
 import asyncio
 import aiohttp
 from utils.audio import record_audio, action_queue
-from utils.text_to_speech import output_text
+from utils.text_to_speech import output_text, stop_audio
 from utils.llm import query_llm
 from utils.web_search import perform_web_search
 
@@ -20,6 +19,7 @@ async def respond():
                 voice_data = action_queue.get(timeout=1)
                 if debug:
                     voice_data = "Test message"
+                print(f"Detected audio: {voice_data}")
                 if "current time" in voice_data:
                     time = datetime.datetime.now().strftime("%I:%M %p")
                     output_text(time)
@@ -37,26 +37,14 @@ async def respond():
                 elif "exit" in voice_data:
                     output_text("Goodbye!")
                     stop_event.set()
+                elif "stop" in voice_data:
+                    stop_audio()
                 else:
                     response = await query_llm(session, voice_data)  # Query local LLM
                     output_text(response)
                 action_queue.task_done()
             except queue.Empty:
                 continue
-
-
-async def generate_random_topics():
-    async with aiohttp.ClientSession() as session:
-        while not stop_event.is_set():
-            try:
-                # Generate a random topic or question
-                random_topic = "Tell me something interesting."
-                response = await query_llm(session, random_topic)
-                output_text(response)
-                # Wait for a specified interval before generating the next topic
-                await asyncio.sleep(60)  # Adjust the interval as needed
-            except Exception as e:
-                print(f"Error in generate_random_topics: {e}")
 
 
 def continuously_record_microphone():
