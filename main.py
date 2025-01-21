@@ -3,13 +3,19 @@ import queue
 import datetime
 import asyncio
 import aiohttp
-from utils.audio import record_audio, action_queue
-from utils.text_to_speech import output_text
-from utils.llm import query_llm
-from utils.web_search import perform_web_search
+from audio_recording.recording import record_audio, action_queue
+from tts.tts import output_text
+from llm.llm_interaction import query_llm
+from dotenv import load_dotenv
+import os
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning, module="torch")
+
+load_dotenv()
 
 stop_event = threading.Event()
-debug = False  # Set this to True to enable debug mode
+debug = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
 
 
 async def respond():
@@ -25,21 +31,15 @@ async def respond():
                 elif "current date" in voice_data:
                     date = datetime.datetime.now().strftime("%B %d, %Y")
                     output_text(date)
-                elif "search" in voice_data:
-                    output_text("What do you want to search for?")
-                    search = voice_data
-                    output_text("Searching for " + search)
-                    search_result = await perform_web_search(
-                        session, search
-                    )  # Perform web search
-                    output_text(search_result)
                 elif "exit" in voice_data:
                     output_text("Goodbye!")
                     stop_event.set()
                 elif "stop" in voice_data:
                     pass
                 else:
-                    response = await query_llm(session, voice_data, sentiment)  # Query local LLM
+                    response = await query_llm(
+                        session, voice_data, sentiment
+                    )  # Query local LLM
                     output_text(response)
                 action_queue.task_done()
             except queue.Empty:

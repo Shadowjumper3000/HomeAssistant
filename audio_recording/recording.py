@@ -1,8 +1,7 @@
 import speech_recognition as sr
 import queue
-from utils.text_to_speech import output_text
+from tts.tts import output_text
 import whisper
-import tempfile
 import os
 import torch
 import nltk
@@ -26,6 +25,9 @@ def record_audio():
     model = whisper.load_model("base")
     recognizer = sr.Recognizer()
     sia = SentimentIntensityAnalyzer()
+    audio_dir = ".audio_data"  # Directory to save audio files
+    os.makedirs(audio_dir, exist_ok=True)  # Create directory if it doesn't exist
+
     with sr.Microphone() as source:
         print("Listening...")
         recognizer.adjust_for_ambient_noise(
@@ -40,16 +42,13 @@ def record_audio():
                 audio = recognizer.listen(
                     source, phrase_time_limit=30
                 )  # Continuously listen for audio
-                with tempfile.NamedTemporaryFile(
-                    delete=False, suffix=".wav"
-                ) as temp_audio_file:
-                    temp_audio_file.write(audio.get_wav_data())
-                    temp_audio_file_path = temp_audio_file.name
+                audio_file_path = os.path.join(audio_dir, "audio.wav")
+                with open(audio_file_path, "wb") as audio_file:
+                    audio_file.write(audio.get_wav_data())
 
                 # Transcribe audio using Whisper
-                result = model.transcribe(temp_audio_file_path)
+                result = model.transcribe(audio_file_path)
                 voice_data = result["text"]
-                os.remove(temp_audio_file_path)  # Clean up temporary file
 
                 if voice_data:
                     print(f"Detected audio: {voice_data}")

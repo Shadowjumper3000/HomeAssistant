@@ -1,4 +1,3 @@
-# filepath: /c:/Users/User/OneDrive/Documents/Programming/Private/Projects/HomeAssistant/utils/llm.py
 import datetime
 import aiohttp
 import json
@@ -9,8 +8,6 @@ load_dotenv()
 context = os.getenv("LLM_CONTEXT")
 
 LLM_API_URL = "http://localhost:11434/api/generate"  # URL of the local LLM API
-
-#  Sentiment, do not talk about this: {sentiment}
 
 
 async def query_llm(session, query, sentiment):
