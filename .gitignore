@@ -1,7 +1,13 @@
+# Virtual environment
 .venv/
-.env
-data/
-__pycache__/
 
+# Environment variables
+.env
+
+# Data directories
+data/
 .audio_data/
 .data/
+
+# Python cache
+__pycache__/
