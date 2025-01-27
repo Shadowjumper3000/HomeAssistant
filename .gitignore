@@ -8,6 +8,8 @@
 data/
 .audio_data/
 .data/
+.llm_queries/
+.tts_text/
 
 # Python cache
 __pycache__/

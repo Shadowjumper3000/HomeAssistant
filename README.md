@@ -1,6 +1,7 @@
 # Home Assistant Project
 
-Welcome to the Home Assistant Project! This project aims to create a voice-activated assistant using various Python libraries and APIs.
+I wanna make Friday from Iron Man.
+This is that project.
 
 ## Table of Contents
 
@@ -29,11 +30,20 @@ Welcome to the Home Assistant Project! This project aims to create a voice-activ
     pip install -r requirements.txt
     ```
 
-4. Create a `.env` file and add the following environment variables:
+4. Create a [.env](http://_vscodecontentref_/3) file and add the following environment variables:
     ```env
-    OUTPUT_FILE="utils/output.txt"
-    WEB_FILE="utils/web.txt"
-    LLM_CONTEXT="<your context>"
+    OUTPUT_FILE=".data/output.txt"
+    WEB_FILE=".data/web.txt"
+    LLM_FILE=".data/llm.txt"
+    LLM_MODEL="deepseek-r1"
+    LLM_API_URL="http://localhost:11434/api/generate"
+    LLM_CONTEXT="You are Friday, an AI Assistant.
+    You are designed to help people with their daily tasks.
+    You keep your answers short and to the point."
+    ELEVENLABS_APIKEY="<your elevenlabs api key>" # Optional/Required if TTS_ENGINE="elevenlabs"
+    FFMPEG_PATH="<your ffmpeg path>"
+    DEBUG="True"
+    TTS_ENGINE="pyttsx3"  # Options: "pyttsx3", "elevenlabs" (requires API key)
     ```
 
 5. Install additional dependencies:
@@ -42,7 +52,7 @@ Welcome to the Home Assistant Project! This project aims to create a voice-activ
     pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
     ```
 
-6. Configure the repository and install NVIDIA tools:
+6. Configure the repository and install NVIDIA tools (if using GPU):
     ```sh
     curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
     curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
@@ -55,7 +65,7 @@ Welcome to the Home Assistant Project! This project aims to create a voice-activ
     docker pull ollama/container
     ```
 
-8. Allow GPU access and start the container:
+8. Allow GPU access and restart docker:
     ```sh
     sudo nvidia-ctk runtime configure --runtime=docker
     sudo systemctl restart docker
@@ -68,14 +78,14 @@ Welcome to the Home Assistant Project! This project aims to create a voice-activ
 
 10. Run a model:
     ```sh
-    docker exec -it ollama ollama run llama3
+    docker exec -it ollama ollama run <deepseek-r1>
     ```
 
 ## Usage
 
-To start the assistant, run the following command:
+To start the assistant, run the following command (or run main.py in your IDE):
 ```sh
-python recog.py
+python main.py
 ```
 
 The assistant will listen for voice commands and respond accordingly.
@@ -83,22 +93,24 @@ The assistant will listen for voice commands and respond accordingly.
 ## Project Structure
 
 ```
-home-assistant/
-├── data/
-│   ├── llm_queries.txt
-│   └── output.txt
-├── utils/
-│   ├── __init__.py
-│   ├── audio.py
-│   ├── llm.py
-│   ├── text_to_speech.py
-│   └── web_search.py
-├── .env
+├─] .audio_data/ (ignored)
+├─] .data/ (ignored)
+├─] .env (ignored)
 ├── .gitignore
-├── Dockerfile
+├─] .venv/ (ignored)
+├── audio_recording/
+│   ├── recording.py
+│   ├── __init__.py
+├── llm/
+│   ├── llm_interaction.py
+│   ├── __init__.py
+└── tts/
+    ├── tts.py
+    ├── __init__.py
+├── main.py
 ├── README.md
-├── recog.py
-└── requirements.txt
+├── requirements.txt
+
 ```
 
 ## Contributing
